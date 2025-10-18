@@ -38,3 +38,4 @@ jobs:
           exclude_assets: .github
           keep_files: true
           commit_message: "Deploy: ${GITHUB_SHA}"
+          
