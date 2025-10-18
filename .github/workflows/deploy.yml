@@ -1,41 +1,25 @@
-name: Deploy to GitHub Pages
+name: Deploy WebApp
 
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to main branch
+      - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      # 1️⃣ Checkout the repo
-      - name: Checkout repository
-        uses: actions/checkout@v4   # updated from v3
+      - uses: actions/checkout@v4
 
-      # 2️⃣ Set up Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4  # updated from v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      # 3️⃣ Install dependencies
-      - name: Install dependencies
-        run: npm install
+      - run: npm ci
+      - run: npm run build
 
-      # 4️⃣ Build the app
-      - name: Build
-        run: npm run build
-
-      # 5️⃣ Deploy to GitHub Pages
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4   # updated from v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          publish_branch: gh-pages
-          exclude_assets: .github
-          keep_files: true
-          commit_message: "Deploy: ${GITHUB_SHA}"
-          
