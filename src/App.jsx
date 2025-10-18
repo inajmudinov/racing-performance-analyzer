@@ -4,27 +4,53 @@ import Papa from "papaparse";
 export default function App() {
   const [data, setData] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [error, setError] = useState("");
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    setError(""); // reset error
     Papa.parse(file, {
       header: true,
+      skipEmptyLines: true,
       complete: (result) => {
-        const parsedData = result.data.filter(row => Object.keys(row).length > 1);
+        const parsedData = result.data;
+
+        if (!parsedData || parsedData.length === 0) {
+          setError("CSV is empty or invalid.");
+          setData([]);
+          setSummary(null);
+          return;
+        }
+
         setData(parsedData);
         calculateSummary(parsedData);
+      },
+      error: (err) => {
+        setError("Failed to parse CSV: " + err.message);
       },
     });
   };
 
   const calculateSummary = (rows) => {
-    // Example: Assume CSV has column "Speed"
-    const speeds = rows.map(r => parseFloat(r.Speed)).filter(v => !isNaN(v));
+    // Adjust this to match your CSV column header exactly
+    const columnName = "Speed";
+
+    // Convert values to numbers, remove invalid entries
+    const speeds = rows
+      .map((r) => parseFloat(r[columnName]?.trim()))
+      .filter((v) => !isNaN(v));
+
+    if (speeds.length === 0) {
+      setSummary({ avg: 0, max: 0, min: 0 });
+      return;
+    }
+
     const avg = (speeds.reduce((a, b) => a + b, 0) / speeds.length).toFixed(2);
-    const max = Math.max(...speeds);
-    const min = Math.min(...speeds);
+    const max = Math.max(...speeds).toFixed(2);
+    const min = Math.min(...speeds).toFixed(2);
+
     setSummary({ avg, max, min });
   };
 
@@ -32,6 +58,8 @@ export default function App() {
     <div className="container">
       <h1>🏎️ Racing Performance Analyzer</h1>
       <input type="file" accept=".csv" onChange={handleFileUpload} />
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       {summary && (
         <div className="stats">
