@@ -1,26 +1,19 @@
+import React from "react";
+
 export default function DriverInsights({ data }) {
-  if (!data || data.length === 0) {
-    return <p>No telemetry data uploaded yet.</p>;
-  }
+  if (!data || data.length === 0) return <p>No telemetry data uploaded yet.</p>;
 
-  // Find the correct column name (Excel may use different casing)
-  const speedKey = Object.keys(data[0]).find(
-    (key) => key.toLowerCase().includes("speed")
-  );
-
-  if (!speedKey) {
-    return <p>No speed column found in CSV file.</p>;
-  }
+  // Find the column containing "speed"
+  const speedKey = Object.keys(data[0]).find(k => k.toLowerCase().includes("speed"));
+  if (!speedKey) return <p>No speed column found in CSV file.</p>;
 
   const speeds = data
-    .map((row) => parseFloat(row[speedKey]))
-    .filter((v) => !isNaN(v));
+    .map(row => parseFloat(row[speedKey]))
+    .filter(v => !isNaN(v));
 
-  if (speeds.length === 0) {
-    return <p>No valid speed data found.</p>;
-  }
+  if (speeds.length === 0) return <p>No valid speed data found.</p>;
 
-  const avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
+  const avgSpeed = speeds.reduce((a,b)=>a+b,0)/speeds.length;
   const maxSpeed = Math.max(...speeds);
   const minSpeed = Math.min(...speeds);
 
