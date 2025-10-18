@@ -1,3 +1,4 @@
+// src/components/DriverInsights.jsx
 import React from 'react';
 
 export default function DriverInsights({ data }) {
@@ -6,22 +7,16 @@ export default function DriverInsights({ data }) {
   }
 
   const speeds = data.map(d => d.speed);
-  const avg = (speeds.reduce((a, b) => a + b, 0) / speeds.length).toFixed(2);
-  const max = Math.max(...speeds);
-  const min = Math.min(...speeds);
+  const avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
+  const maxSpeed = Math.max(...speeds);
+  const minSpeed = Math.min(...speeds);
 
   return (
-    <div className="insights">
-      <h2>📈 Driver Insights</h2>
-      <ul>
-        <li><strong>Average Speed:</strong> {avg} km/h</li>
-        <li><strong>Max Speed:</strong> {max} km/h</li>
-        <li><strong>Min Speed:</strong> {min} km/h</li>
-      </ul>
-
-      {avg < 80 && <p>🏁 Tip: Try to maintain more consistent throttle on straights.</p>}
-      {max > 150 && <p>🚀 Excellent top speed. Focus on optimizing cornering.</p>}
-      {min < 20 && <p>⚠️ Heavy braking detected. Review entry points on corners.</p>}
+    <div>
+      <h2>Driver Insights</h2>
+      <p><strong>Average Speed:</strong> {avgSpeed.toFixed(2)} km/h</p>
+      <p><strong>Max Speed:</strong> {maxSpeed.toFixed(2)} km/h</p>
+      <p><strong>Min Speed:</strong> {minSpeed.toFixed(2)} km/h</p>
     </div>
   );
 }
