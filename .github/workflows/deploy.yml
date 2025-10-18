@@ -12,13 +12,13 @@ jobs:
     steps:
       # 1️⃣ Checkout the repo
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4   # updated from v3
 
       # 2️⃣ Set up Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4  # updated from v3
         with:
-          node-version: '20'  # Adjust if needed
+          node-version: '20'
 
       # 3️⃣ Install dependencies
       - name: Install dependencies
@@ -30,14 +30,11 @@ jobs:
 
       # 5️⃣ Deploy to GitHub Pages
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4   # updated from v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
-          # Prevent deletion of workflow files
           exclude_assets: .github
-          # Optional: keep files that are not overwritten
           keep_files: true
-          # Optional: commit message
           commit_message: "Deploy: ${GITHUB_SHA}"
