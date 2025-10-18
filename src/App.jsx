@@ -1,6 +1,6 @@
-import { useState } from "react";
-import DriverInsights from "./components/DriverInsights";
+import React, { useState } from "react";
 import Papa from "papaparse";
+import DriverInsights from "./components/DriverInsights";
 
 export default function App() {
   const [data, setData] = useState([]);
@@ -13,9 +13,8 @@ export default function App() {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
-      delimiter: "", // autodetects comma, semicolon, tab, etc.
+      delimiter: "", // auto-detect comma, semicolon, tab
       complete: (results) => {
-        console.log("Parsed CSV data:", results.data);
         setData(results.data);
       },
       error: (err) => {
@@ -27,12 +26,7 @@ export default function App() {
   return (
     <div style={{ padding: "20px" }}>
       <h1>Driver Insights</h1>
-      <input
-        type="file"
-        accept=".csv"
-        onChange={handleFileUpload}
-        style={{ marginBottom: "20px" }}
-      />
+      <input type="file" accept=".csv" onChange={handleFileUpload} />
       <DriverInsights data={data} />
     </div>
   );
