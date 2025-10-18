@@ -1,37 +1,39 @@
-// src/App.jsx
-import React, { useState } from 'react';
-import FileUploader from './components/FileUploader';
-import DriverInsights from './components/DriverInsights';
+import { useState } from "react";
+import DriverInsights from "./components/DriverInsights";
+import Papa from "papaparse";
 
-function App() {
+export default function App() {
   const [data, setData] = useState([]);
 
-  const handleFileUpload = (file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target.result.trim();
-      const rows = text.split('\n').map(row => row.split(','));
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-      // Assume header like: time,speed
-      const parsedData = rows.slice(1) // remove header row
-        .map(row => ({
-          time: parseFloat(row[0]),
-          speed: parseFloat(row[1])
-        }))
-        .filter(row => !isNaN(row.speed));
-
-      setData(parsedData);
-    };
-    reader.readAsText(file);
+    Papa.parse(file, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      delimiter: "", // autodetects comma, semicolon, tab, etc.
+      complete: (results) => {
+        console.log("Parsed CSV data:", results.data);
+        setData(results.data);
+      },
+      error: (err) => {
+        console.error("CSV parsing error:", err);
+      },
+    });
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Racing Performance Analyzer</h1>
-      <FileUploader onFileUpload={handleFileUpload} />
+    <div style={{ padding: "20px" }}>
+      <h1>Driver Insights</h1>
+      <input
+        type="file"
+        accept=".csv"
+        onChange={handleFileUpload}
+        style={{ marginBottom: "20px" }}
+      />
       <DriverInsights data={data} />
     </div>
   );
 }
-
-export default App;
