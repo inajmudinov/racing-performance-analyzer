@@ -1,19 +1,14 @@
-// App.jsx
 import React, { useState } from "react";
 import FileUpload from "./components/FileUpload";
 import DriverInsights from "./components/DriverInsights";
-import PerformanceCharts from "./components/PerformanceCharts";
-import ImprovementSuggestions from "./components/ImprovementSuggestions";
 
 export default function App() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="App">
       <FileUpload onDataLoaded={setData} />
-      <DriverInsights data={data} />
-      <PerformanceCharts data={data} />
-      <ImprovementSuggestions data={data} />
+      {data && <DriverInsights data={data} />}
     </div>
   );
 }
