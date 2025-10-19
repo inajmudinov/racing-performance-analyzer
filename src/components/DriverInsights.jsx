@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function DriverInsights({ data }) {
   if (!data || !data.rows || data.rows.length === 0) {
     return <p>No telemetry data uploaded yet.</p>;
