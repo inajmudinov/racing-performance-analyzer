@@ -6,7 +6,8 @@
   "dependencies": {
     "papaparse": "^5.5.3",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "recharts": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
@@ -21,11 +22,11 @@
     "vite": "^7.1.7"
   },
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "lint": "eslint .",
-  "preview": "vite preview",
-  "deploy": "gh-pages -d dist"
-},
-"homepage": "https://inajmudinov.github.io/racing-performance-analyzer"
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
+  },
+  "homepage": "https://inajmudinov.github.io/racing-performance-analyzer"
 }
