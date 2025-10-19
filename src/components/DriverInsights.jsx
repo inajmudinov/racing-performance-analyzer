@@ -18,4 +18,14 @@ export default function DriverInsights({ data }) {
         const max = Math.max(...values).toFixed(2);
 
         return (
-          <div key={col} className="
+          <div key={col} className="insight-card">
+            <h3>{col}</h3>
+            <p>Average: {avg}</p>
+            <p>Min: {min}</p>
+            <p>Max: {max}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
