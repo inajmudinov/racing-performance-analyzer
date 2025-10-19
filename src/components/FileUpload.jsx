@@ -1,9 +1,8 @@
-// FileUpload.jsx
 import React from "react";
 import Papa from "papaparse";
 
 export default function FileUpload({ onDataLoaded }) {
-  const handleFile = (e) => {
+  const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -11,14 +10,28 @@ export default function FileUpload({ onDataLoaded }) {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
-      complete: (result) => onDataLoaded(result.data),
+      complete: (result) => {
+        const rows = result.data;
+        const headers = result.meta.fields;
+
+        // Detect numeric columns automatically
+        const numericColumns = headers.filter((header) =>
+          rows.some((row) => typeof row[header] === "number" && !isNaN(row[header]))
+        );
+
+        onDataLoaded({
+          headers,
+          rows,
+          numericColumns
+        });
+      },
     });
   };
 
   return (
-    <div>
-      <h1>Racing Performance Analyzer</h1>
-      <input type="file" accept=".csv" onChange={handleFile} />
+    <div className="file-upload">
+      <h2>Racing Performance Analyzer</h2>
+      <input type="file" accept=".csv" onChange={handleFileUpload} />
     </div>
   );
 }
