@@ -1,22 +1,21 @@
-// DriverInsights.jsx
 import React from "react";
 
 export default function DriverInsights({ data }) {
-  if (!data || data.length === 0) return null;
-
-  const speeds = data.map(row => parseFloat(row.Speed)).filter(v => !isNaN(v));
-  if (speeds.length === 0) return <p>No valid Speed column found in dataset.</p>;
-
-  const avg = speeds.reduce((a, b) => a + b, 0) / speeds.length;
-  const max = Math.max(...speeds);
-  const min = Math.min(...speeds);
+  if (!data || !data.rows || data.rows.length === 0) {
+    return <p>No telemetry data uploaded yet.</p>;
+  }
 
   return (
     <div>
       <h2>Driver Insights</h2>
-      <p><strong>Average Speed:</strong> {avg.toFixed(2)} km/h</p>
-      <p><strong>Max Speed:</strong> {max.toFixed(2)} km/h</p>
-      <p><strong>Min Speed:</strong> {min.toFixed(2)} km/h</p>
-    </div>
-  );
-}
+      {data.numericColumns.map((col) => {
+        const values = data.rows
+          .map((row) => row[col])
+          .filter((v) => typeof v === "number" && !isNaN(v));
+
+        const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2);
+        const min = Math.min(...values).toFixed(2);
+        const max = Math.max(...values).toFixed(2);
+
+        return (
+          <div key={col} className="
