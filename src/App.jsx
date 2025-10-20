@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
-import ImprovementSuggestions from "./components/ImprovementSuggestions";
+import ImprovementSuggestions from "./components/ImprovementSuggestions.jsx";
 
 export default function App() {
   const [csvData, setCsvData] = useState([]);
