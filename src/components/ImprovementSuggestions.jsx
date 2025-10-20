@@ -1,42 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
+import Papa from "papaparse";
+import ImprovementSuggestions from "./components/ImprovementSuggestions";
 
-export default function ImprovementSuggestions({ data, onFetchAI }) {
-  if (!data || data.length === 0) return null;
+export default function App() {
+  const [csvData, setCsvData] = useState([]);
+  const [recommendation, setRecommendation] = useState("");
 
-  // Calculate min, max, avg for each numeric column
-  const numericCols = Object.keys(data[0]).filter(key => !isNaN(parseFloat(data[0][key])));
-  const stats = numericCols.map(col => {
-    const values = data.map(row => parseFloat(row[col]));
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const avg = values.reduce((a,b) => a+b, 0) / values.length;
-    return { col, min, max, avg };
-  });
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => setCsvData(results.data),
+    });
+  };
+
+  const fetchAIRecommendation = async (data) => {
+    try {
+      // Use environment variable for backend URL if deployed on Render
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
+      const res = await fetch(`${BACKEND_URL}/recommend`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data[0]), // Send first row for recommendation
+      });
+
+      const json = await res.json();
+      setRecommendation(json.recommendation || "No recommendation returned");
+    } catch (err) {
+      console.error(err);
+      setRecommendation("Failed to fetch recommendation. Try again later.");
+    }
+  };
 
   return (
     <div>
-      <h3>Performance Insights</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Column</th>
-            <th>Min</th>
-            <th>Max</th>
-            <th>Average</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stats.map(s => (
-            <tr key={s.col}>
-              <td>{s.col}</td>
-              <td>{s.min}</td>
-              <td>{s.max}</td>
-              <td>{s.avg.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={() => onFetchAI(data)}>Get AI Recommendation</button>
+      <h1>Racing Performance Analyzer</h1>
+
+      <input type="file" accept=".csv" onChange={handleFileUpload} />
+
+      {csvData.length > 0 && (
+        <ImprovementSuggestions data={csvData} onFetchAI={fetchAIRecommendation} />
+      )}
+
+      {recommendation && (
+        <div>
+          <h3>AI Recommendation</h3>
+          <p>{recommendation}</p>
+        </div>
+      )}
     </div>
   );
 }
