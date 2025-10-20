@@ -7,7 +7,7 @@ export default function DriverInsights({ performanceData }) {
   const getRecommendation = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/recommend", {
+      const response = await fetch("https:racing-ai-backend.onrender.com/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(performanceData),
