@@ -1,37 +1,49 @@
 import React, { useState } from "react";
-import FileUpload from "./components/FileUpload";
-import DriverInsights from "./components/DriverInsights";
-import PerformanceCharts from "./components/PerformanceCharts";
-import ImprovementSuggestions from "./components/ImprovementSuggestions";
+import Papa from "papaparse";
+import ImprovementSuggestions from "./ImprovementSuggestions";
 
 export default function App() {
-  const [data, setData] = useState({ headers: [], rows: [], numericColumns: [] });
+  const [csvData, setCsvData] = useState([]);
+  const [recommendation, setRecommendation] = useState("");
 
-  const handleDataLoaded = (parsedData) => {
-    setData(parsedData);
+  const handleFileUpload = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => setCsvData(results.data),
+    });
+  };
+
+  const fetchAIRecommendation = async (data) => {
+    try {
+      const res = await fetch("http://localhost:3000/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data[0]), // Send first row for recommendation
+      });
+      const json = await res.json();
+      setRecommendation(json.recommendation);
+    } catch (err) {
+      console.error(err);
+      setRecommendation("Failed to fetch recommendation. Try again later.");
+    }
   };
 
   return (
-    <div className="App">
-      <FileUpload onDataLoaded={handleDataLoaded} />
-      
-      {data.rows.length > 0 && (
-        <>
-          <PerformanceCharts 
-            rows={data.rows} 
-            numericColumns={data.numericColumns} 
-          />
-
-          <DriverInsights 
-            rows={data.rows} 
-            numericColumns={data.numericColumns} 
-          />
-
-          <ImprovementSuggestions 
-            rows={data.rows} 
-            numericColumns={data.numericColumns} 
-          />
-        </>
+    <div>
+      <h1>Racing Performance Analyzer</h1>
+      <input type="file" accept=".csv" onChange={handleFileUpload} />
+      {csvData.length > 0 && (
+        <ImprovementSuggestions data={csvData} onFetchAI={fetchAIRecommendation} />
+      )}
+      {recommendation && (
+        <div>
+          <h3>AI Recommendation</h3>
+          <p>{recommendation}</p>
+        </div>
       )}
     </div>
   );
