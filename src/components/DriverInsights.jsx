@@ -1,29 +1,34 @@
-export default function DriverInsights({ data }) {
-  if (!data || !data.rows || data.rows.length === 0) {
-    return <p>No telemetry data uploaded yet.</p>;
-  }
+import React, { useState } from "react";
+
+export default function DriverInsights({ performanceData }) {
+  const [recommendation, setRecommendation] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const getRecommendation = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3000/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(performanceData),
+      });
+
+      const data = await response.json();
+      setRecommendation(`${data.recommendation} (${data.source})`);
+    } catch (err) {
+      console.error(err);
+      setRecommendation("Failed to fetch recommendation. Try again later.");
+    }
+    setLoading(false);
+  };
 
   return (
     <div>
-      <h2>Driver Insights</h2>
-      {data.numericColumns.map((col) => {
-        const values = data.rows
-          .map((row) => row[col])
-          .filter((v) => typeof v === "number" && !isNaN(v));
-
-        const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2);
-        const min = Math.min(...values).toFixed(2);
-        const max = Math.max(...values).toFixed(2);
-
-        return (
-          <div key={col} className="insight-card">
-            <h3>{col}</h3>
-            <p>Average: {avg}</p>
-            <p>Min: {min}</p>
-            <p>Max: {max}</p>
-          </div>
-        );
-      })}
+      <h3>Performance Insights</h3>
+      <button onClick={getRecommendation} disabled={loading}>
+        {loading ? "Loading..." : "Get AI Recommendation"}
+      </button>
+      {recommendation && <p><strong>Tip:</strong> {recommendation}</p>}
     </div>
   );
 }
